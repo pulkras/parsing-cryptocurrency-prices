@@ -1,0 +1,23 @@
+import requests
+from bs4 import BeautifulSoup
+import time 
+
+headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36"}
+
+while True:
+    responce = requests.get('https://coinmarketcap.com/', headers=headers).text
+    soup = BeautifulSoup(responce, "lxml")
+
+    blocks = soup.find('tbody').find_all("tr")
+    for coin in blocks:
+        coinName = coin.find('a', class_="cmc-link")
+
+        if "bitcoin" in coinName.get("href"):
+            priceBlock = coin.find('div', class_ = "sc-8bda0120-0") # "sc-131di3y-0")
+            coinPrice = priceBlock.find('a').text
+
+            result = f"BITCOIN: {coinPrice}"
+            print(result, end="")
+            print('\b' * len(result), end='', flush=True)
+            time.sleep(2)
+            break
